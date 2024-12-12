@@ -16,7 +16,7 @@ class MyDrawer extends StatelessWidget {
           // Item para la pantalla principal (bienvenida)
           
             ListTile(
-            title: Text("Iniciar sesión"),
+            title: Text("Bienvenida"),
             onTap: () => Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => WelcomeScreen())),
           ),
@@ -31,11 +31,6 @@ class MyDrawer extends StatelessWidget {
             title: Text("Registrarse"),
             onTap: () => Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => RegisterScreen())),
-          ),
-          ListTile(
-            title: Text("Catalogo"),
-            onTap: () => Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => CatalogoScreen())),
           ),
   
         ],

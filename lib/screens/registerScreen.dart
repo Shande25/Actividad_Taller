@@ -46,9 +46,10 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(
-          "Registro",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Image.network(
+          'https://static.vecteezy.com/system/resources/thumbnails/042/165/811/small_2x/netflix-logo-transparent-background-free-png.png', 
+          height: 80, // Ajusta el tamaño del logo según sea necesario
+          fit: BoxFit.contain, // Asegúrate de que la imagen mantenga su aspecto
         ),
         backgroundColor: Colors.black,
         elevation: 0,
