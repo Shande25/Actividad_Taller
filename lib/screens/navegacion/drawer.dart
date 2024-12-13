@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:nethub/main.dart';
-import 'package:nethub/screens/catalogoScreen.dart';
 import 'package:nethub/screens/loginScreen.dart';
 import 'package:nethub/screens/registerScreen.dart';
 

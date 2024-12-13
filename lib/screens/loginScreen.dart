@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:nethub/screens/catalogoScreen.dart';
-import 'RegisterScreen.dart'; // Asegúrate de importar la pantalla de Registro
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -9,47 +6,46 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  // Función para iniciar sesión
-  Future<void> _loginUser(BuildContext context) async {
-    try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
+  final String correctEmail = "test@example.com";
+  final String correctPassword = "password123";
 
-      if (email.isEmpty || password.isEmpty) {
-        // Mostrar mensaje de error si alguno de los campos está vacío
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Por favor ingresa todos los campos")),
-        );
-        return;
+  void _login() {
+    if (_formKey.currentState!.validate()) {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text.trim();
+
+      if (email == correctEmail && password == correctPassword) {
+
+        Navigator.pushReplacementNamed(context, '/catalog'); 
+      } else {
+
+        _showErrorDialog();
       }
-
-      // Intentar iniciar sesión con Firebase Auth
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Si el login es exitoso, redirigir a la siguiente pantalla (por ejemplo, a un catálogo)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => CatalogoScreen()), // Cambiar por tu pantalla de catálogo
-      );
-    } on FirebaseAuthException catch (e) {
-      // Mostrar mensaje de error si las credenciales son incorrectas o hay otro error
-      String errorMessage = e.message ?? 'Ocurrió un error desconocido.';
-
-      // Si el error es debido a credenciales incorrectas
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        errorMessage = 'Credenciales incorrectas, por favor revisa tu correo o contraseña.';
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
     }
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Credenciales Incorrectas'),
+          content: Text('Por favor, verifica tu correo electrónico y contraseña.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -62,111 +58,151 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        // Usando Image.network para cargar el logo desde la URL
-        title: Image.network(
-          'https://static.vecteezy.com/system/resources/thumbnails/042/165/811/small_2x/netflix-logo-transparent-background-free-png.png', 
-          height: 80, // Ajusta el tamaño del logo según sea necesario
-          fit: BoxFit.contain, // Asegúrate de que la imagen mantenga su aspecto
-        ),
-        backgroundColor: Colors.black,
-        elevation: 0,
-        automaticallyImplyLeading: false, // Esto evita el botón de retroceso
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                "Bienvenido de nuevo",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      body: Stack(
+        children: [
+
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(
+                  'https://media.a24.com/p/a9caa1675e4e534b7b3929029cacf7e6/adjuntos/296/imagenes/009/055/0009055684/1200x675/smart/imagepng.png',
                 ),
-                textAlign: TextAlign.center,
+                fit: BoxFit.cover,
               ),
-              SizedBox(height: 10),
-              Text(
-                "Inicia sesión para continuar",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[500],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 40),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Correo Electrónico',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.email, color: Colors.red),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  border: OutlineInputBorder(),
-                ),
-                style: TextStyle(color: Colors.white),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.lock, color: Colors.red),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  border: OutlineInputBorder(),
-                ),
-                style: TextStyle(color: Colors.white),
-                obscureText: true,
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () => _loginUser(context), // Llama a la función de login
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: Text(
-                  "Iniciar Sesión",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // Texto en blanco
-                  ),
-                ),
-              ),
-              SizedBox(height: 15),
-              TextButton(
-                onPressed: () {
-                  // Redirigir a la pantalla de registro
-                  Navigator.pushReplacement(
-                    context, 
-                    MaterialPageRoute(builder: (context) => RegisterScreen())
-                  );
-                },
-                child: Text(
-                  "¿No tienes cuenta? Regístrate aquí",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Image.network(
+                      'https://static.vecteezy.com/system/resources/previews/017/396/804/non_2x/netflix-mobile-application-logo-free-png.png',
+                      height: 100, 
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  Text(
+                    "Bienvenido de nuevo",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Inicia sesión para continuar",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[300],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 40),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: "Correo Electrónico",
+                            labelStyle: TextStyle(color: Colors.grey[300]),
+                            prefixIcon: Icon(Icons.email, color: Colors.red),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, ingresa tu correo electrónico.';
+                            }
+                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                              return 'Por favor, ingresa un correo válido.';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: "Contraseña",
+                            labelStyle: TextStyle(color: Colors.grey[300]),
+                            prefixIcon: Icon(Icons.lock, color: Colors.red),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, ingresa tu contraseña.';
+                            }
+                            if (value.length < 6) {
+                              return 'La contraseña debe tener al menos 6 caracteres.';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: Text(
+                      "Iniciar Sesión",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: Text(
+                      "¿No tienes cuenta? Regístrate aquí",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

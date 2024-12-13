@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:nethub/screens/loginScreen.dart';
 import 'package:nethub/screens/navegacion/drawer.dart';
 import 'package:nethub/screens/registerScreen.dart';
-// Pantalla de registro
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -16,8 +21,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
       ),
-      debugShowCheckedModeBanner: false, // Desactivar banner de debug
-      home: WelcomeScreen(),  // Pantalla inicial
+      debugShowCheckedModeBanner: false, 
+      home: WelcomeScreen(), 
     );
   }
 }
