@@ -150,7 +150,6 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
 
-                  // Botón de navegación a la pantalla de login con MaterialPageRoute
                   TextButton(
                     onPressed: () {
                       Navigator.push(
