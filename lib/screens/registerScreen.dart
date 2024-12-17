@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa FirebaseAuth
 import 'package:nethub/screens/loginScreen.dart';
 
 class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Instancia de FirebaseAuth
 
   @override
   Widget build(BuildContext context) {
@@ -100,20 +102,30 @@ class RegisterScreen extends StatelessWidget {
 
                   // Botón de registrarse
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       String email = _emailController.text;
                       String password = _passwordController.text;
 
                       if (email.isNotEmpty && password.isNotEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("¡Usuario registrado exitosamente!")),
-                        );
-                        
-                        // Navega a LoginScreen después de registro exitoso
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        );
+                        try {
+                          // Registro del usuario en Firebase
+                          UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+                            email: email,
+                            password: password,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("¡Usuario registrado exitosamente!")),
+                          );
+                          // Navega a LoginScreen después de registro exitoso
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Error al registrar: $e")),
+                          );
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Por favor llena todos los campos")),
