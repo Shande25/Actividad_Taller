@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nethub/screens/loginScreen.dart';
 
 class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -10,6 +11,7 @@ class RegisterScreen extends StatelessWidget {
       body: Stack(
         children: [
 
+          // Fondo con imagen
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -21,6 +23,7 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
+          // Contenido dentro de SingleChildScrollView para permitir desplazamiento
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
@@ -31,7 +34,7 @@ class RegisterScreen extends StatelessWidget {
                   Center(
                     child: Image.network(
                       'https://static.vecteezy.com/system/resources/previews/017/396/804/non_2x/netflix-mobile-application-logo-free-png.png',
-                      height: 100, 
+                      height: 100,
                     ),
                   ),
                   SizedBox(height: 40),
@@ -54,6 +57,8 @@ class RegisterScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 40),
+                  
+                  // Campo de correo electrónico
                   TextField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -72,6 +77,8 @@ class RegisterScreen extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 20),
+
+                  // Campo de contraseña
                   TextField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -90,6 +97,8 @@ class RegisterScreen extends StatelessWidget {
                     obscureText: true,
                   ),
                   SizedBox(height: 30),
+
+                  // Botón de registrarse
                   ElevatedButton(
                     onPressed: () {
                       String email = _emailController.text;
@@ -99,7 +108,7 @@ class RegisterScreen extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("¡Usuario registrado exitosamente!")),
                         );
-                        Navigator.pop(context);
+                        Navigator.pop(context); // Regresa a la pantalla anterior
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Por favor llena todos los campos")),
@@ -123,9 +132,15 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
+
+                  // Botón de navegación a la pantalla de login con MaterialPageRoute
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/login');
+                      // Cambiar Navigator.pushNamed por MaterialPageRoute
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
                     },
                     child: Text(
                       "¿Ya tienes cuenta? Inicia sesión aquí",
