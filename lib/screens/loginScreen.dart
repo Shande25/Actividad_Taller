@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nethub/screens/registerScreen.dart'; // Asegúrate de importar tu pantalla RegisterScreen
+import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
+import 'package:nethub/screens/catalogoScreen.dart'; // Pantalla de catálogo
+import 'package:nethub/screens/registerScreen.dart'; // Pantalla de registro
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -10,23 +12,34 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Instancia de FirebaseAuth
 
-  final String correctEmail = "test@example.com";
-  final String correctPassword = "password123";
-
-  void _login() {
+  // Función de inicio de sesión
+  void _login() async {
     if (_formKey.currentState!.validate()) {
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
-      if (email == correctEmail && password == correctPassword) {
-        Navigator.pushReplacementNamed(context, '/catalog');
-      } else {
+      try {
+        // Intentar iniciar sesión con FirebaseAuth
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        // Si el inicio de sesión es exitoso, navegar al catálogo
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => CatalogoScreen()), // Cambiar a tu pantalla de catálogo
+        );
+      } catch (e) {
+        // Si ocurre un error (como credenciales incorrectas)
         _showErrorDialog();
       }
     }
   }
 
+  // Función para mostrar el diálogo de error
   void _showErrorDialog() {
     showDialog(
       context: context,
@@ -182,7 +195,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => RegisterScreen()),

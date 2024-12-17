@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Importa FirebaseAuth
-import 'package:nethub/screens/loginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
+import 'package:nethub/screens/loginScreen.dart'; // Pantalla de inicio de sesión
 
 class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Instancia de FirebaseAuth
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-
           // Fondo con imagen
           Container(
             decoration: BoxDecoration(
@@ -24,8 +23,6 @@ class RegisterScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Contenido dentro de SingleChildScrollView para permitir desplazamiento
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
@@ -59,7 +56,6 @@ class RegisterScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 40),
-                  
                   // Campo de correo electrónico
                   TextField(
                     controller: _emailController,
@@ -79,7 +75,6 @@ class RegisterScreen extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 20),
-
                   // Campo de contraseña
                   TextField(
                     controller: _passwordController,
@@ -99,7 +94,6 @@ class RegisterScreen extends StatelessWidget {
                     obscureText: true,
                   ),
                   SizedBox(height: 30),
-
                   // Botón de registrarse
                   ElevatedButton(
                     onPressed: () async {
@@ -108,7 +102,7 @@ class RegisterScreen extends StatelessWidget {
 
                       if (email.isNotEmpty && password.isNotEmpty) {
                         try {
-                          // Registro del usuario en Firebase
+                          // Registro de usuario en Firebase
                           UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
                             email: email,
                             password: password,
@@ -116,7 +110,7 @@ class RegisterScreen extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("¡Usuario registrado exitosamente!")),
                           );
-                          // Navega a LoginScreen después de registro exitoso
+                          // Navegar a LoginScreen después de registro exitoso
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -149,7 +143,6 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-
                   TextButton(
                     onPressed: () {
                       Navigator.push(
