@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nethub/screens/videoScreen.dart';
- // Asegúrate de importar el VideoPlayerScreen
 
 class CatalogoScreen extends StatelessWidget {
   final List<Map<String, String>> movies = [
@@ -11,22 +10,10 @@ class CatalogoScreen extends StatelessWidget {
       'videoUrl': 'https://firebasestorage.googleapis.com/v0/b/app-pokemon-73fee.appspot.com/o/productos%2FCris%20MJ%2C%20Kali%20Uchis%2C%20JHAYCO%20-%20SI%20NO%20ES%20CONTIGO%20REMIX.mp4?alt=media&token=6fbad8bf-da92-4561-8bda-adeadca03441',
     },
     {
-      'title': 'Película 1',
-      'description': 'Una emocionante aventura en el espacio.',
-      'image': 'https://hips.hearstapps.com/hmg-prod/images/9oymvcp2zyw0zpwotuxldo2msmw-6683e31cc95b0.jpg?crop=1xw:1xh;center,top&resize=980:*',
-      'videoUrl': 'https://firebasestorage.googleapis.com/v0/b/app-pokemon-73fee.appspot.com/o/productos%2FRels%20B%20-%201000%20Millones%20(Audio%20Oficial).mp4?alt=media&token=9e832255-79bc-496a-812e-796ec95e1121',
-    },
-    {
       'title': 'Película 2',
       'description': 'Una emocionante aventura en el espacio.',
       'image': 'https://hips.hearstapps.com/hmg-prod/images/9oymvcp2zyw0zpwotuxldo2msmw-6683e31cc95b0.jpg?crop=1xw:1xh;center,top&resize=980:*',
-      'videoUrl': 'https://firebasestorage.googleapis.com/v0/b/app-pokemon-73fee.appspot.com/o/productos%2FCris%20MJ%2C%20Kali%20Uchis%2C%20JHAYCO%20-%20SI%20NO%20ES%20CONTIGO%20REMIX.mp4?alt=media&token=6fbad8bf-da92-4561-8bda-adeadca03441',
-    },
-    {
-      'title': 'Película 1',
-      'description': 'Una emocionante aventura en el espacio.',
-      'image': 'https://hips.hearstapps.com/hmg-prod/images/9oymvcp2zyw0zpwotuxldo2msmw-6683e31cc95b0.jpg?crop=1xw:1xh;center,top&resize=980:*',
-      'videoUrl': 'https://firebasestorage.googleapis.com/v0/b/app-pokemon-73fee.appspot.com/o/productos%2FCris%20MJ%2C%20Kali%20Uchis%2C%20JHAYCO%20-%20SI%20NO%20ES%20CONTIGO%20REMIX.mp4?alt=media&token=6fbad8bf-da92-4561-8bda-adeadca03441',
+      'videoUrl': 'https://firebasestorage.googleapis.com/v0/b/app-pokemon-73fee.appspot.com/o/productos%2FRels%20B%20-%201000%20Millones%20(Audio%20Oficial).mp4?alt=media&token=9e832255-79bc-496a-812e-796ec95e1121',
     },
     // Agrega más películas si es necesario
   ];
@@ -70,7 +57,7 @@ class CatalogoScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                elevation: 5,
+                elevation: 10,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
