@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nethub/screens/registerScreen.dart'; // Asegúrate de importar tu pantalla RegisterScreen
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,10 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
       String password = _passwordController.text.trim();
 
       if (email == correctEmail && password == correctPassword) {
-
-        Navigator.pushReplacementNamed(context, '/catalog'); 
+        Navigator.pushReplacementNamed(context, '/catalog');
       } else {
-
         _showErrorDialog();
       }
     }
@@ -60,7 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -71,7 +69,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
@@ -82,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: Image.network(
                       'https://static.vecteezy.com/system/resources/previews/017/396/804/non_2x/netflix-mobile-application-logo-free-png.png',
-                      height: 100, 
+                      height: 100,
                     ),
                   ),
                   SizedBox(height: 40),
@@ -109,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -136,7 +132,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         SizedBox(height: 20),
-
                         TextFormField(
                           controller: _passwordController,
                           decoration: InputDecoration(
@@ -187,7 +182,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/register');
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterScreen()),
+                      );
                     },
                     child: Text(
                       "¿No tienes cuenta? Regístrate aquí",
