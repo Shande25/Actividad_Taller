@@ -108,7 +108,12 @@ class RegisterScreen extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("¡Usuario registrado exitosamente!")),
                         );
-                        Navigator.pop(context); // Regresa a la pantalla anterior
+                        
+                        // Navega a LoginScreen después de registro exitoso
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Por favor llena todos los campos")),
@@ -136,7 +141,6 @@ class RegisterScreen extends StatelessWidget {
                   // Botón de navegación a la pantalla de login con MaterialPageRoute
                   TextButton(
                     onPressed: () {
-                      // Cambiar Navigator.pushNamed por MaterialPageRoute
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LoginScreen()),
