@@ -40,7 +40,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   void _resetHideControlsTimer() {
     // Reiniciar el temporizador cada vez que se detecta un toque o movimiento del mouse
-    _timer.cancel();
+    if (_timer.isActive) {
+      _timer.cancel(); // Cancelar el temporizador anterior
+    }
     setState(() {
       _controlsVisible = true; // Mostrar los controles
     });
@@ -121,7 +123,7 @@ class _ControlsOverlay extends StatelessWidget {
         } else {
           controller.play();
         }
-        onUserInteraction(); // Resetear el temporizador cada vez que se toca la pantalla
+        onUserInteraction(); // Resetear el temporizador al tocar la pantalla
       },
       child: MouseRegion(
         onEnter: (_) => onUserInteraction(), // Mostrar controles si el mouse entra en el área
@@ -199,6 +201,43 @@ class _ControlsOverlay extends StatelessWidget {
                       bufferedColor: Colors.grey,
                       backgroundColor: Colors.white.withOpacity(0.5),
                     ),
+                  ),
+                  // Fila con los controles de volumen alineados a la izquierda
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start, // Alineación a la izquierda
+                    children: [
+                      // Icono de volumen
+                      IconButton(
+                        icon: Icon(
+                          controller.value.volume == 0.0
+                              ? Icons.volume_off
+                              : Icons.volume_up,
+                          color: Colors.white,
+                          size: 30, // Tamaño más pequeño
+                        ),
+                        onPressed: () {
+                          if (controller.value.volume == 0.0) {
+                            controller.setVolume(0.5); // Restaurar el volumen al 50%
+                          } else {
+                            controller.setVolume(0.0); // Silenciar
+                          }
+                          onUserInteraction(); // Resetear el temporizador al tocar el botón
+                        },
+                      ),
+                      // Slider de volumen
+                      Container(
+                        width: 100, // Hacerlo más pequeño
+                        child: Slider(
+                          value: controller.value.volume,
+                          min: 0.0,
+                          max: 1.0,
+                          onChanged: (value) {
+                            controller.setVolume(value);
+                            onUserInteraction(); // Resetear el temporizador al tocar el Slider
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
