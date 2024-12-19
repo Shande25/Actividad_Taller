@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
+import 'package:firebase_database/firebase_database.dart'; // Importar Realtime Database
 import 'package:nethub/screens/loginScreen.dart'; // Pantalla de inicio de sesión
 
 class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference _database = FirebaseDatabase.instance.ref(); // Referencia a la base de datos
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,43 @@ class RegisterScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 40),
+                  // Campo de nombre de usuario
+                  TextField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: "Nombre de Usuario",
+                      labelStyle: TextStyle(color: Colors.grey[300]),
+                      prefixIcon: Icon(Icons.person, color: Colors.red),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  SizedBox(height: 20),
+                  // Campo de edad
+                  TextField(
+                    controller: _ageController,
+                    decoration: InputDecoration(
+                      labelText: "Edad",
+                      labelStyle: TextStyle(color: Colors.grey[300]),
+                      prefixIcon: Icon(Icons.cake, color: Colors.red),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: 20),
                   // Campo de correo electrónico
                   TextField(
                     controller: _emailController,
@@ -94,35 +135,66 @@ class RegisterScreen extends StatelessWidget {
                     obscureText: true,
                   ),
                   SizedBox(height: 30),
-                  // Botón de registrarse
                   ElevatedButton(
                     onPressed: () async {
                       String email = _emailController.text;
                       String password = _passwordController.text;
+                      String username = _usernameController.text;
+                      String age = _ageController.text;
 
-                      if (email.isNotEmpty && password.isNotEmpty) {
+                      // Validar que la edad es un número y es válida
+                      if (email.isNotEmpty &&
+                          password.isNotEmpty &&
+                          username.isNotEmpty &&
+                          age.isNotEmpty) {
                         try {
+                          int ageInt = int.parse(age);
+                          if (ageInt <= 0 || ageInt > 120) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text("Edad no válida. Intenta de nuevo")),
+                            );
+                            return;
+                          }
+
                           // Registro de usuario en Firebase
-                          UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+                          UserCredential userCredential =
+                              await _auth.createUserWithEmailAndPassword(
                             email: email,
                             password: password,
                           );
+
+                          // Guardar datos adicionales en Realtime Database
+                          String uid = userCredential.user!.uid;
+                          await _database.child("users/$uid").set({
+                            "username": username,
+                            "age": ageInt,
+                            "email": email,
+                          });
+
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("¡Usuario registrado exitosamente!")),
+                            SnackBar(
+                                content:
+                                    Text("¡Usuario registrado exitosamente!")),
                           );
+
                           // Navegar a LoginScreen después de registro exitoso
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()),
                           );
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Error al registrar: $e")),
+                            SnackBar(
+                                content: Text("Error al registrar: $e")),
                           );
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Por favor llena todos los campos")),
+                          SnackBar(
+                              content:
+                                  Text("Por favor llena todos los campos")),
                         );
                       }
                     },
