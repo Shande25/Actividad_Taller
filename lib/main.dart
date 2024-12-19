@@ -13,29 +13,53 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isDarkMode = true; // Estado inicial del tema
+
+  // Función para cambiar el tema
+  void cambiarTema(bool isDark) {
+    setState(() {
+      isDarkMode = isDark;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MovieStream',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
-      ),
-      debugShowCheckedModeBanner: false, 
-      home: WelcomeScreen(), 
+      theme: isDarkMode
+          ? ThemeData.dark().copyWith(
+              scaffoldBackgroundColor: Colors.black,
+            )
+          : ThemeData.light().copyWith(
+              scaffoldBackgroundColor: Colors.white,
+            ),
+      debugShowCheckedModeBanner: false,
+      home: WelcomeScreen(cambiarTema: cambiarTema), // Pasamos la función cambiarTema
     );
   }
 }
 
 class WelcomeScreen extends StatelessWidget {
+  final ValueChanged<bool> cambiarTema;
+
+  const WelcomeScreen({Key? key, required this.cambiarTema}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark; // Verifica el tema actual
+
     return Scaffold(
       appBar: AppBar(
         title: Text("¡Bienvenido a MovieStream!"),
-        backgroundColor: Colors.black,
+        backgroundColor: isDarkMode ? Colors.black : Colors.redAccent, // Cambia color según tema
       ),
-      drawer: MyDrawer(), // Aquí incluimos el Drawer
+      drawer: MyDrawer(cambiarTema: cambiarTema), // Incluye el Drawer con el botón de tema
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -58,7 +82,7 @@ class WelcomeScreen extends StatelessWidget {
                   "¡Bienvenido a MovieStream!",
                   style: TextStyle(
                     fontSize: 36,
-                    color: Colors.white,
+                    color: isDarkMode ? Colors.white : Colors.black, // Cambiar color del texto según tema
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                     shadows: [
@@ -77,7 +101,7 @@ class WelcomeScreen extends StatelessWidget {
                   "Explora y transmite tus películas favoritas al instante.",
                   style: TextStyle(
                     fontSize: 20,
-                    color: Colors.white70,
+                    color: isDarkMode ? Colors.white70 : Colors.black87, // Cambiar color del subtítulo
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
@@ -86,9 +110,11 @@ class WelcomeScreen extends StatelessWidget {
                 // Botón de "Iniciar sesión"
                 ElevatedButton(
                   onPressed: () {
-                    // Acción para ir a la pantalla de login
+                    // Navegar a la pantalla de login
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
@@ -108,9 +134,11 @@ class WelcomeScreen extends StatelessWidget {
                 // Botón de "Registrarse"
                 OutlinedButton(
                   onPressed: () {
-                    // Acción para ir a la pantalla de registro
+                    // Navegar a la pantalla de registro
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    );
                   },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: Colors.redAccent, width: 2),
