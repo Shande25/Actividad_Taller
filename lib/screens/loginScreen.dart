@@ -21,11 +21,14 @@ class _LoginScreenState extends State<LoginScreen> {
       String password = _passwordController.text.trim();
 
       try {
-        // Intentar iniciar sesión con FirebaseAuth
+        // Intentar iniciar sesión con FirebaseAuth y almacenar el resultado en userCredential
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
+
+        // Acceder a la información del usuario
+        print("Usuario autenticado: ${userCredential.user?.email}");
 
         // Si el inicio de sesión es exitoso, navegar al catálogo
         Navigator.pushReplacement(
