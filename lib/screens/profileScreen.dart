@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:nethub/screens/loginScreen.dart'; // Asegúrate de importar tu pantalla de login
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -67,14 +68,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'age': int.tryParse(_ageController.text) ?? 0,
         });
 
+        // Cerrar sesión automáticamente después de guardar los cambios
+        await _auth.signOut();
+
+        // Redirigir al usuario al LoginScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()), // Asegúrate de que LoginScreen esté correctamente configurado
+        );
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Información actualizada")),
+          SnackBar(content: Text("Información actualizada. Cierre de sesión automático.")),
         );
       }
     } catch (e) {
       print("Error guardando datos del usuario: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error al actualizar información")),
+      );
+    }
+  }
+
+  Future<void> _signOut() async {
+    try {
+      await _auth.signOut(); // Cerrar sesión
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()), // Redirigir al LoginScreen
+      );
+    } catch (e) {
+      print("Error al cerrar sesión: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al cerrar sesión")),
       );
     }
   }
@@ -180,6 +205,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     child: Text("Guardar Cambios"),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  // Botón de Cerrar sesión
+                  ElevatedButton(
+                    onPressed: _signOut,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey, // Gris para el botón de logout
+                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    child: Text("Cerrar Sesión"),
                   ),
                 ],
               ),
