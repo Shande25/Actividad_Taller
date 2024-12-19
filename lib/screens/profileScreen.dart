@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:nethub/screens/loginScreen.dart'; // Asegúrate de importar tu pantalla de login
+import 'package:flutter/services.dart'; // Necesario para el inputFormatter
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -17,6 +18,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
   bool _isLoading = true;
+  bool isDarkMode = false; // Variable que controla el modo oscuro
+  String? _ageError; // Variable para mostrar un error en el campo de edad
 
   @override
   void initState() {
@@ -61,11 +64,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (user != null) {
         String uid = user.uid;
 
+        // Validar que la edad sea un número
+        final age = int.tryParse(_ageController.text);
+        if (age == null) {
+          setState(() {
+            _ageError = 'Por favor, ingresa una edad válida';
+          });
+          return;
+        }
+
         // Actualizar datos del usuario en la base de datos
         await _dbRef.child("users").child(uid).update({
           'username': _nameController.text,
           'email': _emailController.text,
-          'age': int.tryParse(_ageController.text) ?? 0,
+          'age': age,
         });
 
         // Cerrar sesión automáticamente después de guardar los cambios
@@ -107,9 +119,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       appBar: AppBar(
-        title: Text("Perfil"),
-        backgroundColor: Colors.black, // Fondo negro como Netflix
+        title: Text(
+          "Perfil",
+          style: TextStyle(
+            color: isDarkMode ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(
+              isDarkMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            onPressed: () {
+              setState(() {
+                isDarkMode = !isDarkMode; // Alternar entre modo oscuro y claro
+              });
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -134,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // Blanco para texto
+                      color: isDarkMode ? Colors.white : Colors.black, // Cambiar color según el tema
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -145,16 +178,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     controller: _nameController,
                     decoration: InputDecoration(
                       labelText: "Nombre de usuario",
-                      labelStyle: TextStyle(color: Colors.white), // Etiquetas blancas
+                      labelStyle: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red), // Rojo de Netflix
+                        borderSide: BorderSide(color: isDarkMode ? Colors.red : Colors.blue), // Rojo o azul según el tema
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      fillColor: Colors.black,
+                      fillColor: isDarkMode ? Colors.black : Colors.white,
                       filled: true,
                     ),
-                    style: TextStyle(color: Colors.white), // Texto blanco
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                   ),
                   SizedBox(height: 16),
 
@@ -162,65 +195,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: "Correo Electrónico",
-                      labelStyle: TextStyle(color: Colors.white),
+                      labelStyle: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: BorderSide(color: isDarkMode ? Colors.red : Colors.blue),
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      fillColor: Colors.black,
+                      fillColor: isDarkMode ? Colors.black : Colors.white,
                       filled: true,
                     ),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                   ),
                   SizedBox(height: 16),
 
+                  // Campo de Edad con validación
                   TextField(
                     controller: _ageController,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: false),
                     decoration: InputDecoration(
                       labelText: "Edad",
-                      labelStyle: TextStyle(color: Colors.white),
+                      labelStyle: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: BorderSide(color: isDarkMode ? Colors.red : Colors.blue),
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      fillColor: Colors.black,
+                      fillColor: isDarkMode ? Colors.black : Colors.white,
                       filled: true,
+                      errorText: _ageError, // Mostrar error si hay
                     ),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly, // Solo permite números
+                    ],
                   ),
                   SizedBox(height: 20),
 
-                  // Botón para guardar cambios con estilo tipo Netflix (rojo)
+                  // Botón para guardar cambios con estilo tipo Netflix (rojo) y texto en blanco
                   ElevatedButton(
                     onPressed: _saveUserData,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Rojo estilo Netflix
+                      backgroundColor: isDarkMode ? Colors.red : Colors.black, // Cambiar color según el tema
                       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                       textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    child: Text("Guardar Cambios"),
+                    child: Text(
+                      "Guardar Cambios",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
 
                   SizedBox(height: 20),
 
-                  // Botón de Cerrar sesión
-                  ElevatedButton(
+                  // Ícono de Cerrar sesión (en lugar de un botón de texto)
+                  IconButton(
+                    icon: Icon(Icons.exit_to_app, color: isDarkMode ? Colors.white : Colors.black, size: 30),
                     onPressed: _signOut,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey, // Gris para el botón de logout
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    child: Text("Cerrar Sesión"),
+                    tooltip: "Cerrar sesión",
                   ),
                 ],
               ),

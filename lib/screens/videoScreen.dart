@@ -16,21 +16,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late Future<void> _initializeVideoPlayerFuture;
   bool _controlsVisible = true; // Variable para controlar la visibilidad de los controles
   late Timer _timer; // Timer para controlar el tiempo de inactividad
+  bool _isPlaying = false; // Para saber si el video ha comenzado a reproducirse
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(widget.videoUrl);
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.setLooping(false);
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+      setState(() {
+        _controller.play(); // Iniciar reproducción automática
+        _isPlaying = true; // Marcar como reproducido
+      });
+    });
 
-    // Iniciar el temporizador cuando el video se inicia
-    _startHideControlsTimer();
+    _controller.setLooping(false); // Establece que el video no se repita
+    _startHideControlsTimer(); // Iniciar temporizador para ocultar los controles
   }
 
   void _startHideControlsTimer() {
     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-      if (_controlsVisible) {
+      if (_controlsVisible && _isPlaying) {
         setState(() {
           _controlsVisible = false; // Ocultar los controles después de 5 segundos
         });
@@ -89,9 +94,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               return Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+                  // Aquí centramos el video usando AspectRatio
+                  Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
                   ),
                   if (_controlsVisible) // Solo mostrar los controles si están visibles
                     _ControlsOverlay(
